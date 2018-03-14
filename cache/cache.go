@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+// a simple cache which can store key-values, thread safely.
 type Cache struct {
 	items    map[string]interface{}
 	rwMutex  *sync.RWMutex
@@ -18,7 +19,11 @@ func NewWithCapacity(capacity int) *Cache {
 	return c
 }
 
-func (p Cache) Add(key string, value interface{}) {
+// add an item, if the key is aready exist, returns false directly.
+func (p Cache) Add(key string, value interface{}) (ok bool) {
+	if _, found := p.Search(key); found {
+		return false
+	}
 	p.rwMutex.Lock()
 	if len(p.items) >= p.capacity {
 		for k, _ := range p.items {
@@ -28,27 +33,34 @@ func (p Cache) Add(key string, value interface{}) {
 	}
 	p.items[key] = value
 	p.rwMutex.Unlock()
+	return true
 }
 
-func (p Cache) Remove(key string) {
-	if _, ok := p.Search(key); ok {
-		p.rwMutex.Lock()
-		delete(p.items, key)
-		p.rwMutex.Unlock()
+// remove an item, if the key is not exist, returns false directly.
+func (p Cache) Remove(key string) (ok bool) {
+	if _, found := p.Search(key); !found {
+		return false
 	}
+	p.rwMutex.Lock()
+	delete(p.items, key)
+	p.rwMutex.Unlock()
+	return true
 }
 
-func (p Cache) Replace(key string, newValue interface{}) {
-	if _, ok := p.Search(key); ok {
-		p.rwMutex.Lock()
-		p.items[key] = newValue
-		p.rwMutex.Unlock()
+// replace an item, if the key is not exist, returns false directly.
+func (p Cache) Replace(key string, newValue interface{}) (ok bool) {
+	if _, found := p.Search(key); !found {
+		return false
 	}
+	p.rwMutex.Lock()
+	p.items[key] = newValue
+	p.rwMutex.Unlock()
+	return true
 }
 
-func (p Cache) Search(key string) (interface{}, bool) {
+func (p Cache) Search(key string) (value interface{}, found bool) {
 	p.rwMutex.RLock()
-	v, found := p.items[key]
+	value, found = p.items[key]
 	p.rwMutex.RUnlock()
-	return v, found
+	return
 }
