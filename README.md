@@ -1,3 +1,3 @@
 # su4go
 
-Smart utils for GoLand
+Smart utils for GoLang
