@@ -1,13 +1,41 @@
 package cache
 
-import "testing"
-
+import (
+	"testing"
+	"fmt"
+)
 
 type person struct {
 	age int
 	name string
 }
 
+func init() {
+	Example()
+}
+
+func Example() {
+	cache := NewWithCapacity(2)
+
+	p1 := person{18, "Lily"}
+	p2 := person{20, "Lucy"}
+	if ok := cache.Add("p1", p1); !ok {
+		fmt.Println("add error")
+	}
+	if ok := cache.Add("p2", p2); !ok {
+		fmt.Println("add error")
+	}
+
+	p, found := cache.Search("p1")
+	if found {
+		pp, ok := p.(person)
+		if ok {
+			fmt.Println("pp ia a person, age:", pp.age, " name:", pp.name )
+		} else {
+			fmt.Println("pp is not a person~")
+		}
+	}
+}
 func TestAll(t *testing.T)  {
 	cache := NewWithCapacity(2)
 	if cache.capacity != 2 {
