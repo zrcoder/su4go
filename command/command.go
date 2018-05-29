@@ -10,10 +10,10 @@ import (
 func RunCommand(command string, args ...string) (output string, err error) {
 	cmd := exec.Command(command, args...)
 	out, err := cmd.CombinedOutput()
-	output = string(out)
 	if err != nil {
-		return output, err
+		return "", err
 	}
+	output = string(out)
 	return output, nil
 }
 
