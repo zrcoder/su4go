@@ -4,21 +4,23 @@ import (
 	"os/exec"
 	"time"
 	"errors"
+	"bytes"
 )
 
-// Executes the command and return the combined output.
-func RunCommand(command string, args ...string) (output string, err error) {
-	cmd := exec.Command(command, args...)
-	out, err := cmd.CombinedOutput()
+// Executes the command and returns the result.
+func Run(cmd string) (string, error) {
+	command := exec.Command("/bin/sh", "-c", cmd)
+	var out bytes.Buffer
+	command.Stdout = &out
+	err := command.Run()
 	if err != nil {
 		return "", err
 	}
-	output = string(out)
-	return output, nil
+	return out.String(), nil
 }
 
 // Run a command, kill it if timeout
-func RunCommandWithTimeout(timeout time.Duration, command string, args ...string) (err error) {
+func RunWithTimeout(timeout time.Duration, command string, args ...string) (err error) {
 	cmd := exec.Command(command, args...)
 	err = cmd.Start()
 	if err != nil {
