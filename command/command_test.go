@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TestRunCommand(t *testing.T) {
+func TestRun(t *testing.T) {
 	tests := []struct {
 		cmd string
 	}{
@@ -15,7 +15,7 @@ func TestRunCommand(t *testing.T) {
 		{"hhh"},
 	}
 	for _, test := range tests {
-		output, err := RunCommand(test.cmd)
+		output, err := Run(test.cmd)
 		if err != nil {
 			t.Log(err)
 		} else {
@@ -24,7 +24,7 @@ func TestRunCommand(t *testing.T) {
 	}
 }
 
-func TestRunCommandWithTimeout(t *testing.T) {
+func TestRunWithTimeout(t *testing.T) {
 	tests := []struct {
 		cmd string
 	}{
@@ -42,7 +42,7 @@ func TestRunCommandWithTimeout(t *testing.T) {
 
 func inner(cmd string, timeout time.Duration, t *testing.T) {
 	t.Log("command:", cmd, "; timeout:", timeout)
-	err := RunCommandWithTimeout(timeout, cmd)
+	err := RunWithTimeout(timeout, cmd)
 	if err != nil {
 		t.Log("error hanppens:", err)
 	} else {
