@@ -3,7 +3,6 @@ package schedule
 import (
 	"fmt"
 	"time"
-	"testing"
 )
 
 func ExampleRepeat() {
@@ -11,8 +10,6 @@ func ExampleRepeat() {
 	stop := Repeat(doSomething, time.Second)
 	time.Sleep(3 * time.Second)
 	stop <- true
-}
-
-func TestRepeat(t *testing.T) {
-	ExampleRepeat()
+	// Output:
+	// ***
 }
