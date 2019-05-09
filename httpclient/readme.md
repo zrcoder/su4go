@@ -13,7 +13,7 @@ import (
 
 ```go
 hc.New().Get("http://127.0.0.1:8888/test").Do(func(response *http.Response, body []byte, err error) {
-		// do something with response
+	// do something with response
 	})
 ```
 ```
@@ -25,10 +25,10 @@ type Person struct {
 p := Person{Age: 27, Name: "Tom"}
 
 hc.New().POST("http://127.0.0.1:8888/test").
-		Header("some key", "some value").
-		ContentType(hc.ContentTypeJson).
-		Body(p).
-		Do(func(response *http.Response, body []byte, err error) {
-		// do something with response
+	Header("some key", "some value").
+	ContentType(hc.ContentTypeJson).
+	Body(p).
+	Do(func(response *http.Response, body []byte, err error) {
+	// do something with response
 	})
 ```
