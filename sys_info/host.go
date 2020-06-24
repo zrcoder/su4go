@@ -1,20 +1,34 @@
 package sys_info
 
-import "net"
+import (
+	"net"
+	"strings"
+)
+
+type IpType int
+
+const (
+	IpV4 IpType = 0
+	IpV6 IpType = 1
+)
+
+func ExternalIP() string {
+	return ExternalIPOfType(IpV4)
+}
 
 //get host ip address, if an error occured, returns ""
-func ExternalIP() (string) {
-	ifaces, _ := net.Interfaces()
-	for _, iface := range ifaces {
-		if iface.Flags&net.FlagUp == 0 {
-			continue // interface down
+func ExternalIPOfType(ipType IpType) string {
+	interfaces, _ := net.Interfaces()
+	for _, i := range interfaces {
+		if i.Flags&net.FlagUp == 0 {
+			continue
 		}
-		if iface.Flags&net.FlagLoopback != 0 {
-			continue // loopback interface
+		if i.Flags&net.FlagLoopback != 0 {
+			continue
 		}
-		addrs, _ := iface.Addrs()
-		for _, addr := range addrs {
-			var ip net.IP
+		addresses, _ := i.Addrs()
+		for _, addr := range addresses {
+			var ip net.IP = nil
 			switch v := addr.(type) {
 			case *net.IPNet:
 				ip = v.IP
@@ -24,11 +38,12 @@ func ExternalIP() (string) {
 			if ip == nil || ip.IsLoopback() {
 				continue
 			}
-			ip = ip.To4()
-			if ip == nil {
-				continue // not an ipv4 address
+			if ipType == IpV4 && ip.To4() != nil {
+				return ip.String()
 			}
-			return ip.String()
+			if ipType == IpV6 && strings.Contains(ip.String(), ":") {
+				return ip.String()
+			}
 		}
 	}
 	return ""
